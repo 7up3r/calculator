@@ -1,65 +1,91 @@
+//variables to store user input
+let firstOperand = null;
+let secondOperand = null;
+let operator = null;
+let result = null;
+
+
+//functions to return results based on operator
 const add = (a = 0, b = 0) => a + b;
 
 const subtract = (a = 0, b = 0) => a - b;
 
 const multiply = (a = 1, b = 1) => a * b;
 
-const divide = (a = 1, b = 1) => b == 0? "Math Error" : a / b;
+const divide = (a = 1, b = 1) => b == 0? "Math Error (can't divide by 0)" : a / b;
 
-//variables to store user input
-let firstNumber = 0;
-let secondNumber = 0;
-let operator = '';
+const remainder = (a = 1, b = 1) => a % b;
 
+//function to reset all the values
+const clearAll = function() {
+    firstOperand = null;
+    secondOperand = null;
+    operator = null;
+    result = null;
+    display.innerHTML = '';
+}
 //function to operate user input
-const operate = function (firstNumber, secondNumber, operator) {
-    firstNumber = Number(firstNumber);
-    secondNumber = Number(secondNumber);
+const operate = function (firstOperand, secondOperand, operator) {
+    firstOperand = Number(firstOperand);
+    secondOperand = Number(secondOperand);
+
     switch(operator) {
-        case('+'): return add(firstNumber, secondNumber);
+        case('+'): return add(firstOperand, secondOperand);
+        break;
+        case('-'): return subtract(firstOperand, secondOperand);
                    break;
-        case('-'): return subtract(firstNumber, secondNumber);
+        case('*'): return multiply(firstOperand, secondOperand);
                    break;
-        case('*'): return multiply(firstNumber, secondNumber);
+        case('/'): return divide(firstOperand, secondOperand);
                    break;
-        case('/'): return divide(firstNumber, secondNumber);
+        case('%'): return remainder(firstOperand, secondOperand);
                    break;
+
         default: return "Math Error";
     }
 };
 
 //display value
-let displayValue = 0;
 let display = document.querySelector('.screen');
 const populateDisplay = function() {
     if (this.classList.contains("actionButton")) {
         if (this.value == "clear") {
-            display.innerHTML = '';
-            displayValue = 0;
-            operator = '';
-            firstNumber = 0;
-            secondNumber = 0;
+            clearAll();
         }
         if (this.value == "=") {
-            secondNumber = displayValue;
-            displayValue = operate(firstNumber, secondNumber, operator);
-            display.innerHTML = displayValue;
+            secondOperand = result;
+            result = operate(firstOperand, secondOperand, operator);
+            display.innerHTML = result;
         }
-
+        
     } else if(this.classList.contains("operatorButton")) {
-        operator = this.value;
-        firstNumber = displayValue;
-        displayValue = '';
+        if (operator != null) {
+            secondOperand = result;
+            result = operate(firstOperand, secondOperand, operator);
+            firstOperand = result;
+            operator = this.value;
+            result = null;
+            display.innerHTML = `${firstOperand}`;
+        } else {
+            operator = this.value;
+            firstOperand = result;
+            result = null;
+        }
         display.innerHTML = `${display.innerHTML} ${this.value}`;
     } else {
         display.innerHTML = `${display.innerHTML} ${this.value}`;
-        displayValue += this.value;
+        if(result == null) {
+            result = this.value
+        } else {
+            result += this.value;
+        }
     }
 }
+
+
 
 //adding buttons functionality to display value
 let buttons = Array.from(document.querySelectorAll('.button'));
 buttons.forEach(button => {
     button.addEventListener('click', populateDisplay);
 });
-
