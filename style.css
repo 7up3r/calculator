@@ -1,6 +1,4 @@
-* {
-    border: 1px solid yellowgreen;
-}
+
 body {
     background-color: #383838;
     color: white;
@@ -32,13 +30,20 @@ body {
     align-items: center;
 }
 
+.equation {
+    font-size: 30px;
+    width: 90%;
+    text-align: end;
+    margin-bottom: 0px;
+}
+
 .result {
     font-weight: bolder;
     font-size: 40px;
     width: 90%;
     text-align: end;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin: 0;
+    padding: 0;
 }
 
 
