@@ -2,10 +2,10 @@
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
-let result = null;
+let displayValue = null;
 
 
-//functions to return results based on operator
+//functions to return displayValues based on operator
 const add = (a = 0, b = 0) => a + b;
 
 const subtract = (a = 0, b = 0) => a - b;
@@ -21,8 +21,8 @@ const clearAll = function() {
     firstOperand = null;
     secondOperand = null;
     operator = null;
-    result = null;
-    display.innerHTML = '';
+    displayValue = null;
+    display.textContent = '';
 }
 //function to operate user input
 const operate = function (firstOperand, secondOperand, operator) {
@@ -46,38 +46,42 @@ const operate = function (firstOperand, secondOperand, operator) {
 };
 
 //display value
-let display = document.querySelector('.screen');
+let display = document.querySelector('.result');
 const populateDisplay = function() {
     if (this.classList.contains("actionButton")) {
         if (this.value == "clear") {
             clearAll();
         }
         if (this.value == "=") {
-            secondOperand = result;
-            result = operate(firstOperand, secondOperand, operator);
-            display.innerHTML = result;
+            secondOperand = displayValue;
+            displayValue = operate(firstOperand, secondOperand, operator);
+            display.textContent = displayValue;
+        }
+        if (this.value == "backspace") {
+            displayValue = displayValue.slice(0, displayValue.length - 1);
+            display.textContent = display.textContent.slice(0, display.textContent.length - 1)
         }
         
     } else if(this.classList.contains("operatorButton")) {
         if (operator != null) {
-            secondOperand = result;
-            result = operate(firstOperand, secondOperand, operator);
-            firstOperand = result;
+            secondOperand = displayValue;
+            displayValue = operate(firstOperand, secondOperand, operator);
+            firstOperand = displayValue;
             operator = this.value;
-            result = null;
-            display.innerHTML = `${firstOperand}`;
+            displayValue = null;
+            display.textContent = `${firstOperand}`;
         } else {
             operator = this.value;
-            firstOperand = result;
-            result = null;
+            firstOperand = displayValue;
+            displayValue = null;
         }
-        display.innerHTML = `${display.innerHTML} ${this.value}`;
+        display.textContent = `${display.textContent} ${this.value}`;
     } else {
-        display.innerHTML = `${display.innerHTML} ${this.value}`;
-        if(result == null) {
-            result = this.value
+        display.textContent = `${display.textContent} ${this.value}`;
+        if(displayValue == null) {
+            displayValue = this.value
         } else {
-            result += this.value;
+            displayValue += this.value;
         }
     }
 }
