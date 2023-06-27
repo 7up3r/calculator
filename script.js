@@ -1,111 +1,136 @@
-//variables to store user input
 let firstOperand = null;
 let secondOperand = null;
 let operator = null;
-let displayValue = null;
+let result = null;
 
+//handling keyboard input
+window.addEventListener('keydown', (e) => handleKeyInput(e.key));
 
-//functions to return displayValues based on operator
-const add = (a = 0, b = 0) => a + b;
+function handleKeyInput(key) {
+    if (key >= 0 && key <= 9) appendNumber(key);
+    if (key === '+' || key === '-' || key === '/' || key === '%') {
+        handleOperator(key);
+    }
+    if (key === '*' || key === 'X' || key === 'x') handleOperator('*');
+    if (key === '=' || key === 'Enter') evaluate();
+    if (key === 'Backspace') deleteNumber();
+    if (key === '.') handleDecimal();
+    if (key === 'C' || key === 'c' || key === 'Delete') clearScreen();
+}
 
-const subtract = (a = 0, b = 0) => a - b;
+//handling on-screen buttons 
+const numberButtons = Array.from(document.querySelectorAll('.numberButton'));
+const operatorButton = Array.from(document.querySelectorAll('.operatorButton'));
+const equalButton = document.querySelector('.equalButton');
+const deleteButton = document.querySelector('.deleteButton');
+const decimalButton = document.querySelector('.decimalButton');
+const allClearButton = document.querySelector('.allClearButton');
+const equationScreen = document.querySelector('.equation');
+const currentScreen = document.querySelector('.current');
 
-const multiply = (a = 1, b = 1) => a * b;
+//adding eventlistener to on-screen buttons
+numberButtons.forEach ((button) => {
+    button.addEventListener('click', () => appendNumber(button.value));
+});
 
-const divide = (a = 1, b = 1) => b == 0? "Math Error (can't divide by 0)" : a / b;
+operatorButton.forEach((button) => {
+    button.addEventListener('click', () => handleOperator(button.value));
+});
 
-const remainder = (a = 1, b = 1) => a % b;
+equalButton.addEventListener('click', () => evaluate());
+deleteButton.addEventListener('click', () => deleteNumber());
+decimalButton.addEventListener('click', () => handleDecimal());
+allClearButton.addEventListener('click', () => clearScreen());
 
-//function to reset all the values
-const clearAll = function() {
+//handling number input
+const appendNumber = function(value) {
+    currentScreen.textContent = `${currentScreen.textContent}${value}`;
+};
+
+//handling operator input
+const handleOperator = function(value) {
+    if(operator != null) {
+        secondOperand = currentScreen.textContent;
+        console.log(firstOperand, secondOperand, operator);
+        firstOperand = operate(firstOperand, secondOperand, operator);
+        currentScreen.textContent = firstOperand;
+        console.log(firstOperand, secondOperand, operator);
+    }
+    operator = value;
+    equationScreen.textContent = `${currentScreen.textContent}${operator}`;
+    firstOperand = currentScreen.textContent;
+    currentScreen.textContent = '';
+};
+
+//handle equal to 
+const evaluate = function() {
+    if (equationScreen.textContent.includes('=')) {
+        return;
+    }
+    secondOperand = currentScreen.textContent;
+    result = operate(firstOperand, secondOperand, operator);
+    currentScreen.textContent = result;
+    equationScreen.textContent += `${secondOperand}=` ;
+    firstOperand = result;
+    secondOperand = null;
+    operator = null;
+}
+
+//handle delete 
+const deleteNumber = function() {
+    currentScreen.textContent = currentScreen.textContent.slice(0, currentScreen.textContent.length - 1);
+}
+
+//handle decimal
+const handleDecimal = function() {
+    if( currentScreen.textContent === '') {
+        currentScreen.textContent = 0;
+    }
+    if (currentScreen.textContent.includes('.')) {
+        return;
+    }
+    currentScreen.textContent = `${currentScreen.textContent}.`;
+}
+
+//handle clear screen 
+const clearScreen = function() {
     firstOperand = null;
     secondOperand = null;
     operator = null;
-    displayValue = null;
-    result.textContent = '';
-    equation.textContent = '';
+    shouldResestScreen = false;
+    currentScreen.textContent = '';
+    equationScreen.textContent = '';
 }
-//function to operate user input
-const operate = function (firstOperand, secondOperand, operator) {
-    firstOperand = Number(firstOperand);
-    secondOperand = Number(secondOperand);
 
-    switch(operator) {
-        case('+'): return add(firstOperand, secondOperand);
+
+//functions for basic maths
+const add = (a, b) => a + b;
+
+const subtract = (a, b) => a - b;
+
+const multiply = (a, b) => a * b;
+
+const divide = (a, b) => b == 0 ? "Math Error" : a / b;
+
+const remainder = (a, b) => a % b;
+
+//function to call maths function by checking operator
+const operate = function (a, b, currentOperator) {
+    a = Number(a);
+    b = Number(b);
+
+    switch(currentOperator) {
+        case('+'): return add(a, b);
         break;
-        case('-'): return subtract(firstOperand, secondOperand);
+        case('-'): return subtract(a, b);
                    break;
-        case('*'): return multiply(firstOperand, secondOperand);
+        case('*'): return multiply(a, b);
                    break;
-        case('/'): return divide(firstOperand, secondOperand);
+        case('/'): return divide(a, b);
                    break;
-        case('%'): return remainder(firstOperand, secondOperand);
+        case('%'): return remainder(a, b);
                    break;
 
-        default: return "Math Error";
+        default: return null;
     }
 };
-
-//result value
-let result = document.querySelector('.result');
-let equation = document.querySelector('.equation');
-
-const populateresult = function() {
-    if (this.classList.contains("actionButton")) {
-        if (this.value == "clear") {
-            clearAll();
-        }
-        if (this.value == "=") {
-            secondOperand = displayValue;
-            displayValue = operate(firstOperand, secondOperand, operator);
-            firstOperand = displayValue;
-            operator = null;
-            changeResult(displayValue);
-            changeEquation(this.value);
-        }
-        if (this.value == "backspace") {
-            displayValue = displayValue.slice(0, displayValue.length - 1);
-            result.textContent = result.textContent.slice(0, result.textContent.length - 1)
-        }
-        
-    } else if(this.classList.contains("operatorButton")) {
-        if (operator != null) {
-            secondOperand = displayValue;
-            displayValue = operate(firstOperand, secondOperand, operator);
-            firstOperand = displayValue;
-            operator = this.value;
-            displayValue = null;
-            changeResult(firstOperand);
-        } else {
-            operator = this.value;
-            firstOperand = displayValue;
-            displayValue = null;
-        }
-        changeEquation(this.value);
-    } else {
-        changeEquation(this.value);
-        if(displayValue == null) {
-            displayValue = this.value
-        } else {
-            displayValue += this.value;
-        }
-    }
-}
-
-function changeResult (value) {
-    result.textContent = `${value}`;
-}
-
-function changeEquation (value) {
-    if (value == '=') {
-        equation.textContent = result.textContent;
-    } else {
-        equation.textContent = `${equation.textContent} ${value}`;
-    }
-}
-
-//adding buttons functionality to result value
-let buttons = Array.from(document.querySelectorAll('.button'));
-buttons.forEach(button => {
-    button.addEventListener('click', populateresult);
-});

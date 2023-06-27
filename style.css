@@ -8,6 +8,7 @@ body {
     align-items: center;
     height: 100vh;
     width: 100vw;
+    font-family: 'Bunny Dojo', serif, 'Times New Roman', Times;
 }
 
 .container {
@@ -37,7 +38,7 @@ body {
     margin-bottom: 0px;
 }
 
-.result {
+.current {
     font-weight: bolder;
     font-size: 40px;
     width: 90%;
